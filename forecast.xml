@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<lwws version="livedoor Weather Web Service 1.0">
+<author>livedoor Weather Team.</author>
+<location area="九州" pref="福岡県" city="久留米" />
+
+
+<title>福岡県 久留米 - 明日の天気</title>
+<link>http://weather.livedoor.com/area/40/113.html?v=1</link>
+<forecastday>tomorrow</forecastday>
+<day>Thursday</day>
+<forecastdate>Thu, 20 Aug 2009 00:00:00 +0900</forecastdate>
+<publictime>Wed, 19 Aug 2009 11:00:00 +0900</publictime>
+<telop>晴れ</telop>
+<description>九州北部地方は、高気圧に覆われて概ね晴れとなっています。
+九州北部地方の19日は、高気圧に覆われて概ね晴れですが、太平洋側から湿った空気が流れ込み、午後...&lt;br /&gt;[PR]&lt;a href=&quot;http://weather.livedoor.com/indexes/cloth_wash/?r=rest_pr&quot;&gt;きょうは洗濯できるかな？&lt;/a&gt;</description>
+<image>
+<title>晴れ</title>
+<link>http://weather.livedoor.com/area/40/113.html?v=1</link>
+<url>http://image.weather.livedoor.com/img/icon/1.gif</url>
+<width>50</width>
+<height>31</height>
+</image>
+<temperature>
+<max>
+<celsius>34</celsius>
+<fahrenheit>93.2</fahrenheit>
+</max>
+<min>
+<celsius>25</celsius>
+<fahrenheit>77</fahrenheit>
+</min>
+</temperature>
+
+
+<pinpoint>
+
+<location>
+<title>大牟田市</title>
+<link>http://weather.livedoor.com/point/city/2130.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>久留米市</title>
+<link>http://weather.livedoor.com/point/city/2131.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>柳川市</title>
+<link>http://weather.livedoor.com/point/city/2135.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>八女市</title>
+<link>http://weather.livedoor.com/point/city/2138.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>筑後市</title>
+<link>http://weather.livedoor.com/point/city/2139.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>大川市</title>
+<link>http://weather.livedoor.com/point/city/2140.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>小郡市</title>
+<link>http://weather.livedoor.com/point/city/2144.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>うきは市</title>
+<link>http://weather.livedoor.com/point/city/2153.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>朝倉市</title>
+<link>http://weather.livedoor.com/point/city/2630.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>みやま市</title>
+<link>http://weather.livedoor.com/point/city/2646.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>筑前町</title>
+<link>http://weather.livedoor.com/point/city/2180.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>東峰村</title>
+<link>http://weather.livedoor.com/point/city/2181.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>大刀洗町</title>
+<link>http://weather.livedoor.com/point/city/2183.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>大木町</title>
+<link>http://weather.livedoor.com/point/city/2184.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>黒木町</title>
+<link>http://weather.livedoor.com/point/city/2185.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>立花町</title>
+<link>http://weather.livedoor.com/point/city/2187.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>広川町</title>
+<link>http://weather.livedoor.com/point/city/2188.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>矢部村</title>
+<link>http://weather.livedoor.com/point/city/2189.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+<location>
+<title>星野村</title>
+<link>http://weather.livedoor.com/point/city/2190.html</link>
+<publictime>Wed, 19 Aug 2009 12:00:00 +0900</publictime>
+</location>
+
+</pinpoint>
+
+<copyright>
+<title>Copyright (C) 1996-2009 livedoor Co.,Ltd. All rights reserved.</title>
+<link>http://weather.livedoor.com</link>
+<image>
+<title>livedoor 天気情報</title>
+<link>http://weather.livedoor.com</link>
+<url>http://image.weather.livedoor.com/img/cmn/livedoor.gif</url>
+<width>118</width>
+<height>26</height>
+</image>
+<provider name="（株）ハレックス" link="http://www.halex.co.jp/halexbrain/weather/" />
+<provider name="日本気象協会" link="http://tenki.jp/" />
+</copyright>
+
+</lwws>
