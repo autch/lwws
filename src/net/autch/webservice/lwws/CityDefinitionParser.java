@@ -3,21 +3,16 @@ package net.autch.webservice.lwws;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.List;
-import java.util.Map;
 
 import net.autch.android.lwws.ForecastMapDBHelper;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
-import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import android.util.Xml;
 
 public class CityDefinitionParser {
-	List<Map<String, List<Map<String, Map<String, Integer>>>>> areas;
 	private int area_id, pref_id;
 	private final SQLiteDatabase db;
 

@@ -11,7 +11,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-    </application>
+    <activity android:name=".CityPicker"></activity>
+</application>
     <uses-sdk android:minSdkVersion="3" />
 
 <uses-permission android:name="android.permission.INTERNET"></uses-permission>
