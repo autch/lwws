@@ -85,18 +85,6 @@ public class ForecastMapDBHelper extends SQLiteOpenHelper {
 			db.insert(DB_TABLE, "", values);
 	}
 	
-	public static Cursor query(SQLiteDatabase db, Integer area_id, Integer pref_id, Integer city_id) {
-		String selection = "";
-		
-		selection += " area_id "+ ((area_id == null) ? "IS NULL" : ("= " + area_id.toString()));
-		selection += " AND pref_id "+ ((pref_id == null) ? "IS NULL" : ("= " + pref_id.toString()));
-		selection += " AND city_id "+ ((city_id == null) ? "IS NULL" : ("= " + city_id.toString()));
-		
-		Cursor c = db.query(DB_TABLE, COLUMNS, selection, null, null, null, ORDER);	
-		if(c != null) c.moveToFirst();
-		return c;
-	}
-
 	private static Cursor queryAll(SQLiteDatabase db, String sql) {
 		return db.query(ForecastMapDBHelper.DB_TABLE, COLUMNS, sql, null, null, null, ORDER);
 	}

@@ -4,7 +4,16 @@ import java.net.MalformedURLException;
 
 import android.net.Uri;
 
-public class LivedoorWeatherService {
+/**
+ * Livedoor Weather Web Service クライアントの実装
+ * 
+ * リクエストに必要なデータを集め、HTTP でリクエストを実行し、パーサを起動してレスポンスを解析させ、
+ * 結果を Forecast に入れて返す。
+ *
+ * @see ForecastParser
+ * @see Forecast
+ */
+public class ForecastService {
 	
 	public class Request {
 		private static final String BASE_URL = "http://weather.livedoor.com/forecast/webservice/rest/v1";

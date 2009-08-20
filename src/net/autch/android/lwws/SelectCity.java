@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
-import net.autch.webservice.lwws.CityDefinitionParser;
+import net.autch.webservice.lwws.ForecastMapParser;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -31,7 +31,7 @@ public class SelectCity extends Activity {
 				ForecastMapDBHelper helper = new ForecastMapDBHelper(SelectCity.this);
 				SQLiteDatabase db = helper.getWritableDatabase();
 				try {
-					CityDefinitionParser parser = new CityDefinitionParser(db);
+					ForecastMapParser parser = new ForecastMapParser(db);
 					parser.getDefinitionXML(in);
 				} finally {
 					db.close();

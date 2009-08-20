@@ -12,11 +12,17 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Xml;
 
-public class CityDefinitionParser {
+/**
+ * Livedoor Weather Web Service で使う、地点番号の一覧を解析して SQLite データベースへ保存する。  
+ * 
+ * TODO: 用が済んだらさっさと return する
+ * FIXME: XML が壊れてたら？
+ */
+public class ForecastMapParser {
 	private int area_id, pref_id;
 	private final SQLiteDatabase db;
 
-	public CityDefinitionParser(SQLiteDatabase db) {
+	public ForecastMapParser(SQLiteDatabase db) {
 		area_id = 0;
 		pref_id = 0;
 		this.db = db;
@@ -29,11 +35,17 @@ public class CityDefinitionParser {
 			int eventType = parser.getEventType();
 
 			while (eventType != XmlPullParser.END_DOCUMENT) {
-				if(eventType == XmlPullParser.START_TAG) {
-					String tagName = parser.getName();
+				String tagName = parser.getName();
+				switch(eventType) {
+				case XmlPullParser.START_TAG:
 					if(tagName.equals("area")) {
 						area_id++;
 						onAreaTagStart(parser);
+					}
+					break;
+				case XmlPullParser.END_TAG:
+					if(tagName.equals("source")) {
+						return;
 					}
 				}
 				eventType = parser.next();
