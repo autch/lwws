@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="javadoc">
+    <target name="javadoc">
+        <javadoc access="private" author="true" classpath="." destdir="doc" nodeprecated="false" nodeprecatedlist="false" noindex="false" nonavbar="false" notree="false" packagenames="net.autch.webservice.lwws" source="1.5" sourcefiles="src/net/autch/android/lwws/ForecastDetail.java,src/net/autch/android/lwws/QuickFileDownloadThread.java,src/net/autch/android/lwws/ForecastList.java,src/net/autch/android/lwws/CityPicker.java,src/net/autch/android/lwws/SelectCity.java,src/net/autch/android/lwws/ForecastMapDBHelper.java" sourcepath="src:gen" splitindex="true" use="true" version="true"/>
+    </target>
+</project>
