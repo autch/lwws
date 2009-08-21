@@ -1,23 +1,42 @@
 package net.autch.android.lwws;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-
-import net.autch.webservice.lwws.ForecastMapParser;
 import android.app.Activity;
-import android.app.ProgressDialog;
+import android.content.ComponentName;
 import android.content.Intent;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.TextView;
 
 public class SelectCity extends Activity {
 	private static final String TAG = "SelectCity";
+	
+	private IUpdateForecastMapCallbackListener listener = new IUpdateForecastMapCallbackListener.Stub() {
+		public void receiveMessage(String message) throws RemoteException {
+			// UpdateForecastMapService done.
+			// use message to work
+		}
+	};
+	
+	private ServiceConnection conn = new ServiceConnection() {
+		public void onServiceDisconnected(ComponentName name) {
+		}
+		
+		public void onServiceConnected(ComponentName name, IBinder binder) {
+			IUpdateForecastMapService service = IUpdateForecastMapService.Stub.asInterface(binder);
+			try {
+				service.addListener(listener);
+				
+			} catch(RemoteException e) {
+				Log.e(TAG, e.getMessage(), e);
+			}
+		}
+	};
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
