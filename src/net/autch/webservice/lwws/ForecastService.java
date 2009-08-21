@@ -2,6 +2,8 @@ package net.autch.webservice.lwws;
 
 import java.net.MalformedURLException;
 
+import net.autch.android.lwws.QuickFileDownloadThread;
+
 import android.net.Uri;
 
 /**
@@ -14,6 +16,7 @@ import android.net.Uri;
  * @see Forecast
  */
 public class ForecastService {
+	private QuickFileDownloadThread thread;
 	
 	public class Request {
 		private static final String BASE_URL = "http://weather.livedoor.com/forecast/webservice/rest/v1";
@@ -59,7 +62,9 @@ public class ForecastService {
 		}
 	}
 
-	public class Response {
-		
+
+	public ForecastService() {
+		// TODO 自動生成されたコンストラクター・スタブ
 	}
+
 }

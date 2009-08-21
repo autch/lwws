@@ -3,17 +3,19 @@
       package="net.autch.android.lwws"
       android:versionCode="1"
       android:versionName="1.0">
-    <application android:icon="@drawable/icon" android:label="@string/app_name">
-        <activity android:name=".SelectCity"
-                  android:label="@string/app_name">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-    <activity android:name=".CityPicker"></activity>
-</application>
-    <uses-sdk android:minSdkVersion="3" />
+	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
+		<activity android:name=".SelectCity"></activity>
+		<activity android:name=".CityPicker"></activity>
+		<activity android:name=".ForecastList" android:label="@string/app_name">
+			<intent-filter>
+				<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+		<activity android:name=".ForecastDetail"></activity>
+	</application>
+	<uses-sdk android:minSdkVersion="3" />
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 
-<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+
 </manifest> 
