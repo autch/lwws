@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.View;
 import android.view.Window;
 import android.widget.ListAdapter;
@@ -12,7 +13,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class CityPicker extends ListActivity {
-	private ForecastMapDBHelper dbHelper;
+	private DBHelper dbHelper;
 	private SQLiteDatabase db;
 	private Cursor cursor;
 	
@@ -31,22 +32,32 @@ public class CityPicker extends ListActivity {
 			pref_id = extras.getInt("pref_id", -1);
 		}
 		
-		dbHelper = new ForecastMapDBHelper(this);
+		dbHelper = new DBHelper(this);
 		db = dbHelper.getReadableDatabase();
+		ForecastMapTableHelper helper = new ForecastMapTableHelper(db);
+
+		cursor = helper.queryAllArea();
+		if(cursor.getCount() == 0) {
+			// forecastmap not loaded, navigate to UpdateForecastMap
+			Intent i = new Intent(this, UpdateForecastMap.class);
+			i.putExtra("force", true);
+			startActivityForResult(i, 0);
+		}
+		cursor.close();
 
 		if(area_id == -1 && pref_id == -1)
 		{
-			cursor = ForecastMapDBHelper.queryAllArea(db);
+			cursor = helper.queryAllArea();
 			setTitle("地点の追加: 地域を選択");
 		}
 		else if(area_id != -1 && pref_id == -1)
 		{
-			cursor = ForecastMapDBHelper.queryAllPref(db, area_id);
+			cursor = helper.queryAllPref(area_id);
 			setTitle("地点の追加: 都道府県を選択");
 		}
 		else
 		{
-			cursor = ForecastMapDBHelper.queryAllCity(db, pref_id);
+			cursor = helper.queryAllCity(pref_id);
 			setTitle("地点の追加: 都市を選択");
 		}
 		startManagingCursor(cursor);
@@ -93,5 +104,14 @@ public class CityPicker extends ListActivity {
 		dbHelper.close();
 		
 		super.onDestroy();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+		menu.add(0, 0, 0, "地点情報を更新").setIcon(android.R.drawable.ic_menu_rotate)
+			.setIntent(new Intent(this, UpdateForecastMap.class));
+		
+		return true;
 	}
 }

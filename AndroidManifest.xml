@@ -4,7 +4,6 @@
       android:versionCode="1"
       android:versionName="1.0">
 	<application android:icon="@drawable/icon" android:label="@string/app_name" android:debuggable="true">
-		<activity android:name=".SelectCity"></activity>
 		<activity android:name=".CityPicker"></activity>
 		<activity android:name=".ForecastList" android:label="@string/app_name">
 			<intent-filter>
@@ -13,7 +12,8 @@
 			</intent-filter>
 		</activity>
 		<activity android:name=".ForecastDetail"></activity>
-	</application>
+	<activity android:name=".UpdateForecastMap"></activity>
+</application>
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 

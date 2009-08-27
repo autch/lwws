@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import net.autch.android.lwws.ForecastMapDBHelper;
+import net.autch.android.lwws.ForecastMapTableHelper;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -20,12 +20,12 @@ import android.util.Xml;
  */
 public class ForecastMapParser {
 	private int area_id, pref_id;
-	private final SQLiteDatabase db;
+	private final ForecastMapTableHelper helper;
 
 	public ForecastMapParser(SQLiteDatabase db) {
 		area_id = 0;
 		pref_id = 0;
-		this.db = db;
+		helper = new ForecastMapTableHelper(db);
 	}
 	
 	public void getDefinitionXML(InputStream bodyStream) {
@@ -62,7 +62,7 @@ public class ForecastMapParser {
 		
 		title = parser.getAttributeValue(null, "title");
 		source = parser.getAttributeValue(null, "source");
-		ForecastMapDBHelper.insertArea(db, area_id, title);
+		helper.insertArea(area_id, title);
 		
 		// 続き
 		int eventType = parser.next();
@@ -90,7 +90,7 @@ public class ForecastMapParser {
 		String title, source;
 		
 		title = parser.getAttributeValue(null, "title");
-		ForecastMapDBHelper.insertPrefecture(db, area_id, pref_id, title);
+		helper.insertPrefecture(area_id, pref_id, title);
 
 		int eventType = parser.next();
 		while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -121,7 +121,7 @@ public class ForecastMapParser {
 		title = parser.getAttributeValue(null, "title");
 		id = Integer.parseInt(parser.getAttributeValue(null, "id"));
 		source = parser.getAttributeValue(null, "source");
-		ForecastMapDBHelper.insertCity(db, area_id, pref_id, id, title);
+		helper.insertCity(area_id, pref_id, id, title);
 
 		int eventType = parser.next();
 		while (eventType != XmlPullParser.END_DOCUMENT) {
