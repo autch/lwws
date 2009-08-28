@@ -1,24 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical">
+<LinearLayout android:id="@+id/LinearLayout01"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical">
 
-
-
-<LinearLayout android:id="@+id/LinearLayout02" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:gravity="center"><LinearLayout android:id="@+id/LinearLayout03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center_horizontal"><ImageView android:id="@+id/ImageView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:src="@drawable/fine_then_cloudy"></ImageView><TextView android:id="@+id/TextView01" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Fine then Cloudy"></TextView></LinearLayout><LinearLayout android:id="@+id/LinearLayout04" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical"><LinearLayout android:id="@+id/LinearLayout05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="right"><TextView android:id="@+id/TextView02" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12pt" android:text="Sapporo - Today"></TextView><TextView android:id="@+id/TextView08" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textSize="12pt" android:text="Fine then Cloudy"></TextView><TextView android:id="@+id/TextView03" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Hokkaido pref."></TextView>
-
-
-</LinearLayout>
-<LinearLayout android:id="@+id/LinearLayout06" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_width="fill_parent" android:gravity="center_horizontal"><LinearLayout android:id="@+id/LinearLayout07" android:layout_height="fill_parent" android:layout_width="wrap_content" android:orientation="horizontal"><TextView android:id="@+id/TextView04" android:text="30C" android:textSize="10pt" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="1pt"></TextView><TextView android:id="@+id/TextView06" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="/" android:textSize="10pt" android:layout_margin="1pt"></TextView><TextView android:id="@+id/TextView05" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="25C" android:textSize="10pt" android:layout_margin="1pt"></TextView>
-
-</LinearLayout></LinearLayout>
-
-</LinearLayout>
-
-
-
-</LinearLayout>
-
-
-
-
-<TextView android:id="@+id/TextView07" android:layout_height="wrap_content" android:text="@string/lorem_ipsum" android:layout_width="fill_parent"></TextView>
+	<LinearLayout android:id="@+id/LinearLayout02"
+		android:orientation="horizontal" android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:gravity="center">
+		<LinearLayout android:id="@+id/LinearLayout03"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:orientation="vertical" android:gravity="center_horizontal">
+			<ImageView android:id="@+id/icon"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:src="@drawable/fine_then_cloudy"></ImageView>
+			<TextView android:id="@+id/icon_telop" android:layout_width="wrap_content"
+				android:layout_height="wrap_content" android:text="Fine then Cloudy"></TextView>
+		</LinearLayout>
+		<LinearLayout android:id="@+id/LinearLayout04"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:orientation="vertical">
+			<LinearLayout android:id="@+id/LinearLayout05"
+				android:layout_width="wrap_content" android:layout_height="wrap_content"
+				android:orientation="vertical" android:gravity="right">
+				<TextView android:id="@+id/city_and_day"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:textSize="12pt" android:text="Sapporo - Today"></TextView>
+				<TextView android:id="@+id/telop"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:textSize="12pt" android:text="Fine then Cloudy"></TextView>
+				<TextView android:id="@+id/prefecture"
+					android:layout_width="wrap_content" android:layout_height="wrap_content"
+					android:text="Hokkaido pref."></TextView>
+			</LinearLayout>
+			<LinearLayout android:id="@+id/LinearLayout06"
+				android:layout_height="wrap_content" android:orientation="horizontal"
+				android:layout_width="fill_parent" android:gravity="center_horizontal">
+				<LinearLayout android:id="@+id/LinearLayout07"
+					android:layout_height="fill_parent" android:layout_width="wrap_content"
+					android:orientation="horizontal">
+					<TextView android:id="@+id/temp_max" android:text="30C"
+						android:textSize="10pt" android:layout_width="wrap_content"
+						android:layout_height="wrap_content" android:layout_margin="1pt"></TextView>
+					<TextView android:id="@+id/temp_slash"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="/" android:textSize="10pt" android:layout_margin="1pt"></TextView>
+					<TextView android:id="@+id/temp_min"
+						android:layout_width="wrap_content" android:layout_height="wrap_content"
+						android:text="25C" android:textSize="10pt" android:layout_margin="1pt"></TextView>
+				</LinearLayout>
+			</LinearLayout>
+		</LinearLayout>
+	</LinearLayout>
+	<TextView android:id="@+id/description" android:layout_height="wrap_content"
+		android:text="@string/lorem_ipsum" android:layout_width="fill_parent"></TextView>
 </LinearLayout>

@@ -1,16 +1,15 @@
 package net.autch.android.lwws;
 
-import java.io.File;
-
 import android.app.ListActivity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 public class ForecastList extends ListActivity {
@@ -18,6 +17,8 @@ public class ForecastList extends ListActivity {
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
 	private Cursor cursor;
+
+	private static final int MID_ADD_CITY = 0x1001;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
@@ -34,35 +35,59 @@ public class ForecastList extends ListActivity {
 			Intent i = new Intent(this, CityPicker.class);
 			startActivityForResult(i, 0);
 		}
-		
+
 		startManagingCursor(cursor);
 
 		ListAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_1, cursor, new String[] { "name" }, new int[] { android.R.id.text1 });
+				android.R.layout.simple_list_item_1, cursor, new String[] { "name" }, new int[] { android.R.id.text1 });
 
-        // Bind to our new adapter.
-        setListAdapter(adapter);
-        setProgressBarVisibility(false);
+		// Bind to our new adapter.
+		setListAdapter(adapter);
+		setProgressBarVisibility(false);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(0, 0, 0, "地点を追加").setIcon(android.R.drawable.ic_menu_add)
-			.setIntent(new Intent(this, CityPicker.class));
-		
+		menu.add(Menu.NONE, MID_ADD_CITY, Menu.NONE, "地点を追加").setIcon(android.R.drawable.ic_menu_add);
 		return true;
 	}
-	
+
+	@Override
+	protected void onListItemClick(ListView l, View v, int position, long id) {
+		// TODO 自動生成されたメソッド・スタブ
+		super.onListItemClick(l, v, position, id);
+
+		Cursor c = (Cursor)getListView().getItemAtPosition(position);
+		int city_id = c.getInt(3);
+
+		Intent it = new Intent(this, ForecastDetail.class);
+		it.setData(LwwsUri.buildForForecastDetail(city_id));
+		it.putExtra("name", c.getString(4));
+
+		startActivity(it);
+	}
+
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		return super.onMenuItemSelected(featureId, item);
-//		return true;
+		switch(item.getItemId()) {
+		case MID_ADD_CITY:
+			Intent it = new Intent(ForecastList.this, CityPicker.class);
+			startActivityForResult(it, MID_ADD_CITY);
+		default:
+			return super.onMenuItemSelected(featureId, item);
+		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		// TODO 自動生成されたメソッド・スタブ
+		if(/*requestCode == MID_ADD_CITY && */ resultCode == RESULT_OK) {
+			int city_id = data.getExtras().getInt("city_id");
+
+			CitiesTableHelper helper = new CitiesTableHelper(db);
+			helper.insertCity(city_id);
+			return;
+		}
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
@@ -70,7 +95,7 @@ public class ForecastList extends ListActivity {
 	protected void onDestroy() {
 		db.close();
 		dbHelper.close();
-		
+
 		super.onDestroy();
 	}
 }

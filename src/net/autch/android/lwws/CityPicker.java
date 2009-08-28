@@ -16,7 +16,7 @@ public class CityPicker extends ListActivity {
 	private DBHelper dbHelper;
 	private SQLiteDatabase db;
 	private Cursor cursor;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -26,12 +26,12 @@ public class CityPicker extends ListActivity {
 
 		Bundle extras = getIntent().getExtras();
 		int area_id = -1, pref_id = -1;
-		
+
 		if(extras != null) {
 			area_id = extras.getInt("area_id", -1);
 			pref_id = extras.getInt("pref_id", -1);
 		}
-		
+
 		dbHelper = new DBHelper(this);
 		db = dbHelper.getReadableDatabase();
 		ForecastMapTableHelper helper = new ForecastMapTableHelper(db);
@@ -63,20 +63,20 @@ public class CityPicker extends ListActivity {
 		startManagingCursor(cursor);
 
 		ListAdapter adapter = new SimpleCursorAdapter(this,
-                android.R.layout.simple_list_item_1, cursor, new String[] { "name" }, new int[] { android.R.id.text1 });
+				android.R.layout.simple_list_item_1, cursor, new String[] { "name" }, new int[] { android.R.id.text1 });
 
-        // Bind to our new adapter.
-        setListAdapter(adapter);
-        setProgressBarVisibility(false);
+		// Bind to our new adapter.
+		setListAdapter(adapter);
+		setProgressBarVisibility(false);
 	}
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		
+
 		Intent intent = new Intent(getIntent());
 		Cursor c = (Cursor)getListView().getItemAtPosition(position);
-		
+
 		intent.putExtra("name", c.getString(4));
 		intent.putExtra("area_id", c.getInt(1));
 		if(!c.isNull(2)) intent.putExtra("pref_id", c.getInt(2)); 
@@ -102,7 +102,7 @@ public class CityPicker extends ListActivity {
 	protected void onDestroy() {
 		db.close();
 		dbHelper.close();
-		
+
 		super.onDestroy();
 	}
 
@@ -110,8 +110,8 @@ public class CityPicker extends ListActivity {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(0, 0, 0, "地点情報を更新").setIcon(android.R.drawable.ic_menu_rotate)
-			.setIntent(new Intent(this, UpdateForecastMap.class));
-		
+		.setIntent(new Intent(this, UpdateForecastMap.class));
+
 		return true;
 	}
 }
