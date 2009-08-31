@@ -17,7 +17,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.TextView;
 
@@ -27,7 +26,6 @@ public class ForecastDetail extends Activity {
 
 	private Handler handler;
 	private ProgressDialog please_wait;
-	private WebView wv;
 
 	private final Runnable onParseComplete = new Runnable() {
 		public void run() {
@@ -50,8 +48,8 @@ public class ForecastDetail extends Activity {
 					//tv = (TextView)findViewById(R.id.icon_telop);
 					//tv.setText(detail.getTelop());
 
-					tv = (TextView)findViewById(R.id.description);
-					tv.setText(detail.getDescription());
+					//tv = (TextView)findViewById(R.id.description);
+					//tv.setText(detail.getDescription());
 					StringBuffer html = new StringBuffer();
 					html.append("<html><head>\n");
 					html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n");
@@ -59,7 +57,8 @@ public class ForecastDetail extends Activity {
 					html.append(detail.getDescription());
 					html.append("\n</body></html>");
 
-					wv.loadData(html.toString(), "text/html", "utf-8");
+					WebView wv = (WebView)findViewById(R.id.description);
+					wv.loadDataWithBaseURL("about:blank", html.toString(), "text/html", "utf-8", "about:blank");
 
 					Log.d(TAG, "onParseComplete(): success");
 				} finally {
@@ -102,10 +101,6 @@ public class ForecastDetail extends Activity {
 
 		handler = new Handler();
 		please_wait = ProgressDialog.show(this, null, "地点情報を取得しています...", true, false);
-
-		wv = new WebView(this);
-		ViewGroup parent = (ViewGroup)findViewById(R.id.description).getParent();
-		parent.addView(wv);
 
 		Runnable updateThread = new Runnable() {
 			public void run() {

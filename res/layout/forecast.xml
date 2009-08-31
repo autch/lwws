@@ -51,6 +51,6 @@
 			</LinearLayout>
 		</LinearLayout>
 	</LinearLayout>
-	<TextView android:id="@+id/description" android:layout_height="wrap_content"
-		android:text="@string/lorem_ipsum" android:layout_width="fill_parent"></TextView>
+	<WebView android:id="@+id/description" android:layout_height="wrap_content"
+		android:text="@string/lorem_ipsum" android:layout_width="fill_parent"></WebView>
 </LinearLayout>
