@@ -14,7 +14,7 @@ public class LwwsUri {
 		return Uri.fromParts(SCHEME, String.format("/forecast/%d/detail", city_id), null);
 	}
 
-	class ForecastDetailData {
+	static class ForecastDetailData {
 		public int city_id;
 	}
 
@@ -30,7 +30,10 @@ public class LwwsUri {
 		view = segments.get(2);
 
 		if(object.equals(OBJECT_FORECAST)) {
-
+			ForecastDetailData detail = new ForecastDetailData();
+			detail.city_id = Integer.parseInt(id);
+			return detail;
 		}
+		throw new IllegalArgumentException();
 	}
 }

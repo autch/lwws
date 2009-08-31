@@ -3,7 +3,6 @@ package net.autch.webservice.lwws;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,34 +18,37 @@ import android.util.Xml;
  *
  */
 public class ForecastParser {
+	private static final String TAG = "ForecastParser";
 	private Forecast forecast;
 	private XmlPullParser parser;
-	
+
 	public Forecast parse(InputStream in) throws XmlPullParserException, IOException {
 		parser = Xml.newPullParser();
 		forecast = new Forecast();
 
 		parser.setInput(new InputStreamReader(in));
-		
+
 		forecast = parseLwws(parser, forecast);
 
 		return forecast;
 	}
-	
-	private Forecast parseLwws(XmlPullParser parser, Forecast forecast)
-		throws XmlPullParserException, IOException {
 
+	private Forecast parseLwws(XmlPullParser parser, Forecast forecast)
+	throws XmlPullParserException, IOException {
+		String tagName = "";
 		int eventType = parser.getEventType();
 
 		while (eventType != XmlPullParser.END_DOCUMENT) {
-			String tagName = "";
 			switch(eventType) {
 			case XmlPullParser.START_TAG:
 				tagName = parser.getName();
 				if(tagName.equals("location")) {
 					forecast.setArea(parser.getAttributeValue(null, "area"));
 					forecast.setPref(parser.getAttributeValue(null, "pref"));
-					forecast.setArea(parser.getAttributeValue(null, "city"));
+					forecast.setCity(parser.getAttributeValue(null, "city"));
+				}
+				if(tagName.equals("pinpoint")){
+					forecast = parsePinpoint(parser, forecast);
 				}
 				break;
 			case XmlPullParser.TEXT:
@@ -95,9 +97,6 @@ public class ForecastParser {
 				if(tagName.equals("telop")) {
 					forecast.setTelop(parser.getText());
 				}
-				if(tagName.equals("telop")) {
-					forecast.setTelop(parser.getText());
-				}
 				if(tagName.equals("description")) {
 					forecast.setDescription(parser.getText());
 				}
@@ -109,6 +108,29 @@ public class ForecastParser {
 			eventType = parser.next();
 		}
 
+		return forecast;
+	}
+
+	private Forecast parsePinpoint(XmlPullParser parser, Forecast forecast)
+	throws XmlPullParserException, IOException {
+		String tagName = "";
+		int eventType = parser.getEventType();
+
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch(eventType) {
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				break;
+			case XmlPullParser.TEXT:
+				break;
+			case XmlPullParser.END_TAG:
+				if(tagName.equals("pinpoint")){
+					return forecast;
+				}
+				break;
+			}
+			eventType = parser.next();
+		}
 		return forecast;
 	}
 }
