@@ -124,6 +124,7 @@ public class ForecastParser {
 			case XmlPullParser.TEXT:
 				break;
 			case XmlPullParser.END_TAG:
+				tagName = parser.getName();
 				if(tagName.equals("pinpoint")){
 					return forecast;
 				}
