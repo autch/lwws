@@ -35,47 +35,49 @@ public class UpdateForecastMap extends Activity {
 					} catch (IOException e) {
 					}
 				}
-		        Log.d(TAG, "onParseComplete(): success");
-	        	setResult(RESULT_OK);
+				Log.d(TAG, "onParseComplete(): success");
+				setResult(RESULT_OK);
 			} catch (FileNotFoundException e) {
 				// TODO 自動生成された catch ブロック
 				System.err.println(e);
 				e.printStackTrace();
-		        Log.d(TAG, "onParseComplete(): failed");
-	        	setResult(RESULT_CANCELED);
+				Log.d(TAG, "onParseComplete(): failed");
+				setResult(RESULT_CANCELED);
 			} finally {
 				please_wait.dismiss();
-	        	finish();
+				finish();
 			}
 		}
 	};
-	 
+
 	/** Called when the activity is first created. */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Bundle extras = getIntent().getExtras();
-        final boolean force = (extras == null) ? false : extras.getBoolean("force", false);        
-        
-        setContentView(R.layout.main);
-        Log.d(TAG, "onCreate()");
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Bundle extras = getIntent().getExtras();
+		final boolean force = (extras == null) ? false : extras.getBoolean("force", false);        
 
-	    handler = new Handler();
-	    please_wait = ProgressDialog.show(this, null, "地点情報を取得しています...", true, false);
+		setContentView(R.layout.main);
+		Log.d(TAG, "onCreate()");
 
-	    Runnable updateThread = new Runnable() {
+		handler = new Handler();
+		please_wait = ProgressDialog.show(this, null, "地点情報を取得しています...", true, false);
+
+		Runnable updateThread = new Runnable() {
 			public void run() {
 				File f = UpdateForecastMap.this.getFileStreamPath("forecastmap.xml");
-		        if(!f.exists() || force) {
-			        QuickFileDownloadThread dl = new QuickFileDownloadThread(
-			        		UpdateForecastMap.this, handler, URL_CITIES_RSS, "forecastmap.xml");
-			        dl.setOnComplete(onParseComplete);
-			        dl.start();
-		        } else {
-		        	handler.post(onParseComplete);
-		        }
+				if(!f.exists() || force) {
+					QuickFileDownloadThread dl = new QuickFileDownloadThread(
+							UpdateForecastMap.this, URL_CITIES_RSS, "forecastmap.xml");
+					//dl.setHandler(handler);
+					dl.setOnComplete(onParseComplete);
+					dl.start();
+				} else {
+					//handler.post(onParseComplete);
+					onParseComplete.run();
+				}
 			}
 		};
 		new Thread(updateThread).start();
-    }
+	}
 }

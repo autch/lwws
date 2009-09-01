@@ -113,7 +113,8 @@ public class ForecastDetail extends Activity {
 					Log.d(TAG, "URL: " + builder.toString());
 
 					QuickFileDownloadThread dl = new QuickFileDownloadThread(
-							ForecastDetail.this, handler, builder.toString(), "4.xml");
+							ForecastDetail.this, builder.toString(), "4.xml");
+					dl.setHandler(handler);
 					dl.setOnComplete(onParseComplete);
 					dl.start();
 				} else {
