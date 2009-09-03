@@ -13,19 +13,64 @@ import org.xmlpull.v1.XmlPullParserException;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.webkit.WebView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 public class ForecastDetail extends Activity {
 	private static final String TAG = "ForecastDetail";
 	private static final String URL_FORECAST_V1 = "http://weather.livedoor.com/forecast/webservice/rest/v1";
 
-	private Handler handler;
+	private final Handler handler = new Handler();
 	private ProgressDialog please_wait;
+	private Forecast detail;
+
+	public final void setTextViewById(int id, String string) {
+		TextView tv = (TextView)findViewById(id);
+		tv.setText(string);
+	}
+
+	private final Runnable setUIContents = new Runnable() {
+		public void run() {
+			String forecastday;
+
+			switch(detail.getForecastday()) {
+			case Forecast.TODAY:
+				forecastday = "きょう";
+				break;
+			case Forecast.TOMORROW:
+				forecastday = "明日";
+				break;
+			case Forecast.DAY_AFTER_TOMORROW: 
+				forecastday = "あさって";
+				break;
+			default:
+				forecastday = "";
+			}
+
+			setTextViewById(R.id.city_and_day, detail.getCity() + " - " + forecastday);
+			setTextViewById(R.id.prefecture, detail.getPref() + " - " + detail.getArea());
+			setTextViewById(R.id.icon_telop, detail.getIcon().getTitle());
+			setTextViewById(R.id.temp_max, detail.getTemperature().getMaxC() + "℃");
+			setTextViewById(R.id.temp_min, detail.getTemperature().getMinC() + "℃");
+
+			ImageView iv = (ImageView)findViewById(R.id.icon);
+			iv.setImageURI(Uri.parse(detail.getIcon().getUrl()));
+
+			//ListView lv = (ListView)findViewById(R.id.pinpoint_list);
+			//lv.setAdapter(new SimpleAdapter(ForecastDetail.this, detail.getPinpointAsMap(), android.R.layout.simple_list_item_1, new String[]{ "title" }, new int[]{ android.R.id.text1 }));					
+
+			WebView wv = (WebView)findViewById(R.id.description);
+			wv.loadDataWithBaseURL("about:blank", detail.getDescription(), "text/html", "utf-8", "about:blank");
+
+			Log.d(TAG, "onParseComplete(): success");
+		}
+	};
 
 	private final Runnable onParseComplete = new Runnable() {
 		public void run() {
@@ -35,32 +80,33 @@ public class ForecastDetail extends Activity {
 				//SQLiteDatabase db = dbHelper.getWritableDatabase();
 				ForecastParser parser = new ForecastParser(); 
 				try {
-					Forecast detail = parser.parse(in);
-					TextView tv;
+					detail = parser.parse(in);
+					final Uri uri = Uri.parse(detail.getIcon().getUrl());
 
-					tv = (TextView)findViewById(R.id.city_and_day);
-					tv.setText(detail.getCity() + " - " + detail.getDay());
-					tv = (TextView)findViewById(R.id.prefecture);
-					tv.setText(detail.getPref() + " - " + detail.getArea());
+					QuickFileDownloadThread dl = new QuickFileDownloadThread(
+							ForecastDetail.this, uri.toString(), uri.getLastPathSegment());
+					dl.setHandler(handler);
+					dl.setOnComplete(new Runnable() {
+						public void run() {
+							try {
+								FileInputStream is = ForecastDetail.this.openFileInput(uri.getLastPathSegment());
+								try {
+									ImageView iv = (ImageView)findViewById(R.id.icon);
+									iv.setImageDrawable(Drawable.createFromStream(is, uri.getLastPathSegment()));
+								} finally {
+									try {
+										is.close();
+									} catch (IOException e) {
+									}
+								}
+							} catch(FileNotFoundException fe) {
+								fe.printStackTrace();
+							}
+						}
+					});
+					dl.start();
 
-					tv = (TextView)findViewById(R.id.telop);
-					tv.setText(detail.getTelop());
-					//tv = (TextView)findViewById(R.id.icon_telop);
-					//tv.setText(detail.getTelop());
-
-					//tv = (TextView)findViewById(R.id.description);
-					//tv.setText(detail.getDescription());
-					StringBuffer html = new StringBuffer();
-					html.append("<html><head>\n");
-					html.append("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n");
-					html.append("</head><body>\n");
-					html.append(detail.getDescription());
-					html.append("\n</body></html>");
-
-					WebView wv = (WebView)findViewById(R.id.description);
-					wv.loadDataWithBaseURL("about:blank", html.toString(), "text/html", "utf-8", "about:blank");
-
-					Log.d(TAG, "onParseComplete(): success");
+					handler.post(setUIContents);
 				} finally {
 					try {
 						in.close();
@@ -99,10 +145,9 @@ public class ForecastDetail extends Activity {
 
 		Log.d(TAG, "onCreate()");
 
-		handler = new Handler();
-		please_wait = ProgressDialog.show(this, null, "地点情報を取得しています...", true, false);
+		please_wait = ProgressDialog.show(this, null, "予報を取得しています...", true, false);
 
-		Runnable updateThread = new Runnable() {
+		final Runnable updateThread = new Runnable() {
 			public void run() {
 				File f = ForecastDetail.this.getFileStreamPath("4.xml");
 				if(!f.exists() || true) {
@@ -110,15 +155,13 @@ public class ForecastDetail extends Activity {
 					Uri.Builder builder = uri.buildUpon();
 					builder.appendQueryParameter("day", "tomorrow");
 					builder.appendQueryParameter("city", "4"); // city_id
-					Log.d(TAG, "URL: " + builder.toString());
 
 					QuickFileDownloadThread dl = new QuickFileDownloadThread(
 							ForecastDetail.this, builder.toString(), "4.xml");
-					dl.setHandler(handler);
 					dl.setOnComplete(onParseComplete);
 					dl.start();
 				} else {
-					handler.post(onParseComplete);
+					onParseComplete.run();
 				}
 			}
 		};

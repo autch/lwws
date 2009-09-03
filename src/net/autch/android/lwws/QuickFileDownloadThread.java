@@ -7,8 +7,11 @@ import java.net.URL;
 
 import android.content.Context;
 import android.os.Handler;
+import android.util.Log;
 
 public class QuickFileDownloadThread extends Thread {
+	private static final String TAG = "QuickDLThread";
+
 	private final Context context;
 	private Handler handler;
 	private final String urlString, filename;
@@ -46,6 +49,7 @@ public class QuickFileDownloadThread extends Thread {
 
 	@Override
 	public void run() {
+		Log.d(TAG, String.format("URL: '%s' => '%s'" , urlString, filename));
 		try {
 			URL url = new URL(this.urlString);
 			HttpURLConnection conn = (HttpURLConnection)url.openConnection();

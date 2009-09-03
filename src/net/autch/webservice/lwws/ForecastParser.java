@@ -7,6 +7,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.autch.webservice.lwws.Forecast.Copyright;
+import net.autch.webservice.lwws.Forecast.Image;
+import net.autch.webservice.lwws.Forecast.PinpointLocation;
+import net.autch.webservice.lwws.Forecast.Temperature;
+import net.autch.webservice.lwws.Forecast.Copyright.Provider;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -19,12 +25,10 @@ import android.util.Xml;
  */
 public class ForecastParser {
 	private static final String TAG = "ForecastParser";
-	private Forecast forecast;
-	private XmlPullParser parser;
 
 	public Forecast parse(InputStream in) throws XmlPullParserException, IOException {
-		parser = Xml.newPullParser();
-		forecast = new Forecast();
+		XmlPullParser parser = Xml.newPullParser(); 
+		Forecast forecast = new Forecast();
 
 		parser.setInput(new InputStreamReader(in));
 
@@ -49,6 +53,15 @@ public class ForecastParser {
 				}
 				if(tagName.equals("pinpoint")){
 					forecast = parsePinpoint(parser, forecast);
+				}
+				if(tagName.equals("image")) {
+					parseImage(parser, forecast.getIcon());
+				}
+				if(tagName.equals("temperature")) {
+					parseTemperature(parser, forecast.getTemperature());
+				}
+				if(tagName.equals("copyright")) {
+					parseCopyright(parser, forecast.getCopyright());
 				}
 				break;
 			case XmlPullParser.TEXT:
@@ -114,7 +127,35 @@ public class ForecastParser {
 	private Forecast parsePinpoint(XmlPullParser parser, Forecast forecast)
 	throws XmlPullParserException, IOException {
 		String tagName = "";
-		int eventType = parser.getEventType();
+		int eventType = parser.next();
+
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch(eventType) {
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("location")) {
+					PinpointLocation location = forecast.new PinpointLocation();
+					if(parsePinpointLocation(parser, location))
+						forecast.addPinpoint(location);
+				}
+				break;
+			case XmlPullParser.END_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("pinpoint")){
+					return forecast;
+				}
+				tagName = "";
+				break;
+			}
+			eventType = parser.next();
+		}
+		return forecast;
+	}
+
+	private boolean parsePinpointLocation(XmlPullParser parser, PinpointLocation location)
+	throws XmlPullParserException, IOException {
+		String tagName = "";
+		int eventType = parser.next();
 
 		while (eventType != XmlPullParser.END_DOCUMENT) {
 			switch(eventType) {
@@ -122,16 +163,177 @@ public class ForecastParser {
 				tagName = parser.getName();
 				break;
 			case XmlPullParser.TEXT:
+				if(tagName.equals("title")) {
+					location.setTitle(parser.getText());
+				}
+				if(tagName.equals("link")) {
+					location.setLink(parser.getText());
+				}
+				if(tagName.equals("publictime")) {
+					SimpleDateFormat df = new SimpleDateFormat();
+					try {
+						Date date = df.parse(parser.getText());
+						location.setPublictime(date);
+					} catch (ParseException e) {
+						location.setPublictime(null);
+					}
+				}
 				break;
 			case XmlPullParser.END_TAG:
 				tagName = parser.getName();
-				if(tagName.equals("pinpoint")){
-					return forecast;
+				if(tagName.equals("location")){
+					return true;
 				}
+				tagName = "";
 				break;
 			}
 			eventType = parser.next();
 		}
-		return forecast;
+		return false;
+	}
+
+	private boolean parseImage(XmlPullParser parser, Image image)
+	throws XmlPullParserException, IOException {
+		String tagName = "";
+		int eventType = parser.next();
+
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch(eventType) {
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				break;
+			case XmlPullParser.TEXT:
+				if(tagName.equals("title")) {
+					image.setTitle(parser.getText());
+				}
+				if(tagName.equals("link")) {
+					image.setLink(parser.getText());
+				}
+				if(tagName.equals("url")) {
+					image.setUrl(parser.getText());
+				}
+				if(tagName.equals("width")) {
+					image.setWidth(parseIntSafely(parser.getText()));
+				}
+				if(tagName.equals("height")) {
+					image.setHeight(parseIntSafely(parser.getText()));
+				}
+				break;
+			case XmlPullParser.END_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("image")){
+					return true;
+				}
+				tagName = "";
+				break;
+			}
+			eventType = parser.next();
+		}
+		return false;
+	}
+
+	private boolean parseTemperature(XmlPullParser parser, Temperature temp)
+	throws XmlPullParserException, IOException {
+		final int MAX = 1;
+		final int MIN = 2;
+
+		String tagName = "";
+		int which = 0;
+		int eventType = parser.next();
+
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch(eventType) {
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("max")) {
+					which = MAX;
+				}
+				if(tagName.equals("min")) {
+					which = MIN;
+				}
+				break;
+			case XmlPullParser.TEXT:
+				if(tagName.equals("celsius")) {
+					if(which == MAX)
+						temp.setMaxC(parseDoubleSafely(parser.getText()));
+					if(which == MIN)
+						temp.setMinC(parseDoubleSafely(parser.getText()));
+				}
+				if(tagName.equals("fahrenheit")) {
+					if(which == MAX)
+						temp.setMaxF(parseDoubleSafely(parser.getText()));
+					if(which == MIN)
+						temp.setMinF(parseDoubleSafely(parser.getText()));
+				}
+				break;
+			case XmlPullParser.END_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("max") || tagName.equals("min")) {
+					which = 0;
+				}
+				if(tagName.equals("temperature")){
+					return true;
+				}
+				tagName = "";
+				break;
+			}
+			eventType = parser.next();
+		}
+		return false;
+	}
+
+	private static double parseDoubleSafely(String s) {
+		double d = Double.NaN;
+
+		try {
+			d = Double.parseDouble(s.trim());
+		} catch(NumberFormatException nfe) {
+			d = Double.NaN;
+		}
+		return d;
+	}
+
+	private static int parseIntSafely(String s) {
+		return Integer.parseInt(s.trim());
+	}
+
+	private boolean parseCopyright(XmlPullParser parser, Copyright copyright) 
+	throws XmlPullParserException, IOException {
+		String tagName = "";
+		int eventType = parser.next();
+
+		while (eventType != XmlPullParser.END_DOCUMENT) {
+			switch(eventType) {
+			case XmlPullParser.START_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("provider")) {
+					Provider provider = copyright.new Provider();
+					provider.setName(parser.getAttributeValue(null, "name"));
+					provider.setLink(parser.getAttributeValue(null, "link"));
+					copyright.addProvider(provider);
+				}
+				if(tagName.equals("image")) {
+					parseImage(parser, copyright.getBanner());
+				}
+				break;
+			case XmlPullParser.TEXT:
+				if(tagName.equals("title")) {
+					copyright.setTitle(parser.getText());
+				}
+				if(tagName.equals("link")) {
+					copyright.setLink(parser.getText());
+				}
+				break;
+			case XmlPullParser.END_TAG:
+				tagName = parser.getName();
+				if(tagName.equals("copyright")){
+					return true;
+				}
+				tagName = "";
+				break;
+			}
+			eventType = parser.next();
+		}
+		return false;
 	}
 }

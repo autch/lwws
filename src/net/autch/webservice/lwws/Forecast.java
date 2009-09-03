@@ -2,7 +2,8 @@ package net.autch.webservice.lwws;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * レスポンスとして得られた XML に対応するエンティティ。
@@ -19,24 +20,25 @@ public class Forecast {
 
 	private String author;
 	private String area, pref, city;
-	
+
 	private String title, link;
 	private int forecastday;
 	private String day;
 	private Date forecastdate, publictime;
 	private String telop, description;
-	
-	private ArrayList<PinpointLocation> pinpoint;
-	private Image icon;
-	private Temperature temperature;
-	
+
+	private final ArrayList<PinpointLocation> pinpoint;
+	private final Image icon;
+	private final Temperature temperature;
+	private final Copyright copyright;
+
 	/**
 	 * 画像情報
 	 */
-	private class Image {
+	public class Image {
 		private String title, link, url;
 		private int width, height;
-		
+
 		public String getTitle() {
 			return title;
 		}
@@ -68,14 +70,18 @@ public class Forecast {
 			this.height = height;
 		}
 	}
-	
+
 	/**
 	 * ピンポイント予報の地点 
 	 */
-	private class PinpointLocation {
+	public class PinpointLocation {
+		public static final String KEY_TITLE = "title";
+		public static final String KEY_LINK = "link";
+		public static final String KEY_PUBLICTIME = "publictime";
+
 		private String title, link;
 		private Date publictime;
-		
+
 		public String getTitle() {
 			return title;
 		}
@@ -94,12 +100,21 @@ public class Forecast {
 		public void setPublictime(Date publictime) {
 			this.publictime = publictime;
 		}
+
+		public Map<String, Object> toMap() {
+			HashMap<String, Object> map = new HashMap<String, Object>();
+
+			map.put(KEY_TITLE, title);
+			map.put(KEY_LINK, link);
+			map.put(KEY_PUBLICTIME, publictime);
+			return map;
+		}
 	}
 
 	/**
 	 * 気温。最高・最低、摂氏・華氏。 
 	 */
-	private class Temperature {
+	public class Temperature {
 		private double min_c, max_c; /// celsius
 		private double min_f, max_f; /// fahrenheit
 
@@ -132,16 +147,16 @@ public class Forecast {
 	/**
 	 * 著作権情報。 
 	 */
-	private class Copyright {
+	public class Copyright {
 		private String title, link;
-		private Image banner;
-		private ArrayList<Provider> providers;
-		
+		private final Image banner;
+		private final ArrayList<Provider> providers;
+
 		public Copyright() {
 			providers = new ArrayList<Provider>();
 			banner = new Image();
 		}
-		
+
 		public String getTitle() {
 			return title;
 		}
@@ -169,8 +184,8 @@ public class Forecast {
 		public void addProvider(Provider provider) {
 			this.providers.add(provider);
 		}
-		
-		private class Provider {
+
+		public class Provider {
 			private String name, link;
 
 			public String getName() {
@@ -195,8 +210,9 @@ public class Forecast {
 		pinpoint = new ArrayList<PinpointLocation>();
 		icon = new Image();
 		temperature = new Temperature();
+		copyright = new Copyright();
 	}
-	
+
 	public String getAuthor() {
 		return author;
 	}
@@ -305,7 +321,20 @@ public class Forecast {
 		return pinpoint;
 	}
 
+	public ArrayList<Map<String, Object>> getPinpointAsMap() {
+		ArrayList<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+		for(PinpointLocation location : pinpoint) {
+			list.add(location.toMap());
+		}
+		return list;
+	}
+
 	public void addPinpoint(PinpointLocation pinpoint) {
 		this.pinpoint.add(pinpoint);
+	}
+
+	public Copyright getCopyright() {
+		return copyright;
 	}
 }
