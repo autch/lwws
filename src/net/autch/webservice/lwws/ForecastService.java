@@ -3,7 +3,6 @@ package net.autch.webservice.lwws;
 import java.net.MalformedURLException;
 
 import net.autch.android.lwws.QuickFileDownloadThread;
-
 import android.net.Uri;
 
 /**
@@ -17,12 +16,12 @@ import android.net.Uri;
  */
 public class ForecastService {
 	private QuickFileDownloadThread thread;
-	
-	public class Request {
+
+	public static class Request {
 		private static final String BASE_URL = "http://weather.livedoor.com/forecast/webservice/rest/v1";
 		private int city_id;
 		private int day;
-		
+
 		public static final int TODAY = 1;
 		public static final int TOMORROW = 2;
 		public static final int DAY_AFTER_TOMORROW = 3;
@@ -48,17 +47,26 @@ public class ForecastService {
 		public void setDay(int day) {
 			this.day = day;
 		}
-		
+
 		public Uri toUri() throws MalformedURLException {
 			if(day < 1 || day > 3)
 				throw new MalformedURLException("'day' should be one of TODAY, TOMORROW, DAY_AFTER_TOMORROW");
-			
+
 			Uri uri = Uri.parse(BASE_URL);
 			Uri.Builder builder = uri.buildUpon();
 			builder.appendQueryParameter("city", String.valueOf(city_id));
 			builder.appendQueryParameter("day", DAY_STRING[day]);
-			
+
 			return builder.build();
+		}
+
+		@Override
+		public String toString() {
+			try {
+				return toUri().toString();
+			} catch (MalformedURLException e) {
+				return "(null)";
+			}
 		}
 	}
 
