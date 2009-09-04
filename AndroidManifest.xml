@@ -13,6 +13,7 @@
 		</activity>
 		<activity android:name=".ForecastDetail"></activity>
 	<activity android:name=".UpdateForecastMap"></activity>
+<activity android:name=".ForecastDetailTabs"></activity>
 </application>
 	<uses-sdk android:minSdkVersion="3" />
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>

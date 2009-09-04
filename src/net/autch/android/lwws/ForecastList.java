@@ -61,7 +61,7 @@ public class ForecastList extends ListActivity {
 		Cursor c = (Cursor)getListView().getItemAtPosition(position);
 		int city_id = c.getInt(3);
 
-		Intent it = new Intent(this, ForecastDetail.class);
+		Intent it = new Intent(this, ForecastDetailTabs.class);
 		it.setData(LwwsUri.buildForForecastDetail(city_id));
 		it.putExtra("name", c.getString(4));
 

@@ -11,7 +11,6 @@ import net.autch.webservice.lwws.ForecastParser;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -27,7 +26,6 @@ public class ForecastDetail extends Activity {
 	private static final String URL_FORECAST_V1 = "http://weather.livedoor.com/forecast/webservice/rest/v1";
 
 	private final Handler handler = new Handler();
-	private ProgressDialog please_wait;
 	private Forecast detail;
 
 	public final void setTextViewById(int id, String string) {
@@ -38,6 +36,8 @@ public class ForecastDetail extends Activity {
 	private final Runnable setUIContents = new Runnable() {
 		public void run() {
 			String forecastday;
+
+			setContentView(R.layout.forecast);
 
 			switch(detail.getForecastday()) {
 			case Forecast.TODAY:
@@ -126,8 +126,6 @@ public class ForecastDetail extends Activity {
 				Log.d(TAG, ioe.getMessage());
 				ioe.printStackTrace();
 			} finally {
-				please_wait.dismiss();
-				//				finish();
 			}
 		}
 	};
@@ -135,7 +133,10 @@ public class ForecastDetail extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.forecast);
+		//setContentView(R.layout.forecast);
+		setContentView(R.layout.wait);
+		setTextViewById(R.id.text_wait, "予報を取得しています...");
+
 
 		Intent it = getIntent();
 		Bundle extras = it.getExtras();
@@ -144,8 +145,6 @@ public class ForecastDetail extends Activity {
 		}
 
 		Log.d(TAG, "onCreate()");
-
-		please_wait = ProgressDialog.show(this, null, "予報を取得しています...", true, false);
 
 		final Runnable updateThread = new Runnable() {
 			public void run() {
