@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
 
 import net.autch.webservice.lwws.Forecast;
 import net.autch.webservice.lwws.ForecastParser;
@@ -24,7 +27,6 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.SimpleAdapter;
@@ -64,20 +66,26 @@ public class ForecastDetail extends Activity {
 				forecastday = "";
 			}
 
+			GregorianCalendar cal = new GregorianCalendar(TimeZone.getDefault(), Locale.getDefault());
+			cal.setTime(detail.getForecastdate());
 			setTextViewById(R.id.city_and_day, detail.getCity() + " - "
-					+ forecastday);
+					+ forecastday + ": " + cal.get(GregorianCalendar.DAY_OF_MONTH) + "日");
 			setTextViewById(R.id.prefecture, detail.getPref() + " - "
 					+ detail.getArea());
 			setTextViewById(R.id.icon_telop, detail.getIcon().getTitle());
-			setTextViewById(R.id.temp_max, detail.getTemperature().getMaxC()
-					+ "℃");
+			if (!Double.isNaN(detail.getTemperature().getMaxC())) {
+				setTextViewById(R.id.temp_max, detail.getTemperature()
+						.getMaxC()
+						+ "℃");
+			} else {
+				setTextViewById(R.id.temp_max, "--.-℃");
+			}
 			if (!Double.isNaN(detail.getTemperature().getMinC())) {
 				setTextViewById(R.id.temp_min, detail.getTemperature()
 						.getMinC()
 						+ "℃");
 			} else {
-				TextView tv = (TextView) findViewById(R.id.temp_min);
-				tv.setVisibility(View.INVISIBLE);
+				setTextViewById(R.id.temp_min, "--.-℃");
 			}
 
 			ImageView iv = (ImageView) findViewById(R.id.icon);
@@ -119,9 +127,11 @@ public class ForecastDetail extends Activity {
 								.openFileInput(uri.getLastPathSegment());
 								try {
 									ImageView iv = (ImageView) findViewById(R.id.icon);
-									iv.setImageDrawable(Drawable
-											.createFromStream(is, uri
-													.getLastPathSegment()));
+									Drawable image = Drawable.createFromStream(is, uri
+											.getLastPathSegment());
+									iv.setImageDrawable(image);
+									iv.setMinimumWidth(image.getIntrinsicWidth() * 2);
+									iv.setMinimumHeight(image.getIntrinsicHeight() * 2);
 								} finally {
 									try {
 										is.close();

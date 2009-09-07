@@ -41,7 +41,7 @@ public class CityPicker extends ListActivity {
 			// forecastmap not loaded, navigate to UpdateForecastMap
 			Intent i = new Intent(this, UpdateForecastMap.class);
 			i.putExtra("force", true);
-			startActivityForResult(i, 0);
+			startActivityForResult(i, RequestCodes.UPDATE_FORECAST_MAP);
 		}
 		cursor.close();
 
@@ -85,17 +85,18 @@ public class CityPicker extends ListActivity {
 			setResult(RESULT_OK, intent);
 			finish();
 		} else {
-			startActivityForResult(intent, 0);
+			startActivityForResult(intent, RequestCodes.PICK_CITY);
 		}
 	}
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if(resultCode == RESULT_OK) {
+		if(requestCode == RequestCodes.PICK_CITY
+				&& resultCode == RESULT_OK) {
 			setResult(RESULT_OK, data);
 			finish();
 		}
+		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override

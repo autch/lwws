@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import net.autch.webservice.lwws.Forecast.Copyright;
 import net.autch.webservice.lwws.Forecast.Image;
@@ -84,16 +85,17 @@ public class ForecastParser {
 					}
 				}
 				if(tagName.equals("forecastdate")) {
-					SimpleDateFormat df = new SimpleDateFormat();
+					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						forecast.setForecastdate(date);
 					} catch (ParseException e) {
+						e.printStackTrace();
 						forecast.setForecastdate(null);
 					}
 				}
 				if(tagName.equals("publictime")) {
-					SimpleDateFormat df = new SimpleDateFormat();
+					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						forecast.setPublictime(date);
@@ -170,7 +172,7 @@ public class ForecastParser {
 					location.setLink(parser.getText());
 				}
 				if(tagName.equals("publictime")) {
-					SimpleDateFormat df = new SimpleDateFormat();
+					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						location.setPublictime(date);

@@ -11,6 +11,7 @@ import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.TextView;
 
 public class ForecastList extends ListActivity {
 	private static final String TAG = "ForecastList";
@@ -25,6 +26,9 @@ public class ForecastList extends ListActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_list);
 
+		TextView tv = (TextView)findViewById(android.R.id.empty);
+		tv.setText("地点が登録されていません。メニューから地点の登録を行ってください。");
+
 		dbHelper = new DBHelper(this);
 		db = dbHelper.getWritableDatabase();
 
@@ -33,7 +37,7 @@ public class ForecastList extends ListActivity {
 		if(cursor.getCount() == 0) {
 			// cities not registered, navigate to CityPicker
 			Intent i = new Intent(this, CityPicker.class);
-			startActivityForResult(i, 0);
+			startActivityForResult(i, RequestCodes.PICK_CITY);
 		}
 
 		startManagingCursor(cursor);
@@ -74,7 +78,7 @@ public class ForecastList extends ListActivity {
 		switch(item.getItemId()) {
 		case MID_ADD_CITY:
 			Intent it = new Intent(ForecastList.this, CityPicker.class);
-			startActivityForResult(it, MID_ADD_CITY);
+			startActivityForResult(it, RequestCodes.PICK_CITY);
 		default:
 			return super.onMenuItemSelected(featureId, item);
 		}
@@ -82,7 +86,8 @@ public class ForecastList extends ListActivity {
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(/*requestCode == MID_ADD_CITY && */ resultCode == RESULT_OK) {
+		if(requestCode == RequestCodes.PICK_CITY
+				&& resultCode == RESULT_OK) {
 			int city_id = data.getExtras().getInt("city_id");
 
 			CitiesTableHelper helper = new CitiesTableHelper(db);

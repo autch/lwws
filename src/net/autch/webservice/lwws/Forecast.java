@@ -118,6 +118,9 @@ public class Forecast {
 		private double min_c, max_c; /// celsius
 		private double min_f, max_f; /// fahrenheit
 
+		public Temperature() {
+			min_c = max_c = min_f = max_f = Double.NaN;
+		}
 		public double getMinC() {
 			return min_c;
 		}
