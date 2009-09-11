@@ -1,5 +1,6 @@
 package net.autch.android.lwws;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -71,8 +72,11 @@ public class QuickFileDownloadThread extends Thread {
 							fos.write(buffer, 0, bytesRead);
 						}
 						fos.flush();
-					} finally {
 						fos.close();
+
+						File f = context.getFileStreamPath(filename);
+						f.setLastModified(conn.getHeaderFieldDate("Last-Modified", System.currentTimeMillis()));
+					} finally {
 						is.close();
 					}
 				}

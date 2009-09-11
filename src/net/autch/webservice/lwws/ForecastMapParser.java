@@ -27,7 +27,7 @@ public class ForecastMapParser {
 		pref_id = 0;
 		helper = new ForecastMapTableHelper(db);
 	}
-	
+
 	public void getDefinitionXML(InputStream bodyStream) {
 		final XmlPullParser parser = Xml.newPullParser();
 		try {
@@ -51,19 +51,19 @@ public class ForecastMapParser {
 				eventType = parser.next();
 			}
 		} catch (XmlPullParserException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		} catch (IOException e) {
-			System.err.println(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
 	private void onAreaTagStart(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String title, source;
-		
+
 		title = parser.getAttributeValue(null, "title");
 		source = parser.getAttributeValue(null, "source");
 		helper.insertArea(area_id, title);
-		
+
 		// 続き
 		int eventType = parser.next();
 		while (eventType != XmlPullParser.END_DOCUMENT) {
@@ -88,7 +88,7 @@ public class ForecastMapParser {
 
 	private void onPrefTagStart(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String title, source;
-		
+
 		title = parser.getAttributeValue(null, "title");
 		helper.insertPrefecture(area_id, pref_id, title);
 
@@ -117,7 +117,7 @@ public class ForecastMapParser {
 	private void onCityTagStart(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String title, source;
 		int id;
-		
+
 		title = parser.getAttributeValue(null, "title");
 		id = Integer.parseInt(parser.getAttributeValue(null, "id"));
 		source = parser.getAttributeValue(null, "source");

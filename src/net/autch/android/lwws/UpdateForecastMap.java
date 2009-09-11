@@ -39,7 +39,6 @@ public class UpdateForecastMap extends Activity {
 				setResult(RESULT_OK);
 			} catch (FileNotFoundException e) {
 				// TODO 自動生成された catch ブロック
-				System.err.println(e);
 				e.printStackTrace();
 				Log.d(TAG, "onParseComplete(): failed");
 				setResult(RESULT_CANCELED);

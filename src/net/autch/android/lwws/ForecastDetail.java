@@ -1,6 +1,5 @@
 package net.autch.android.lwws;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -34,9 +33,9 @@ import android.widget.TextView;
 
 public class ForecastDetail extends Activity {
 	private static final String TAG = "ForecastDetail";
-	private static final String URL_FORECAST_V1 = "http://weather.livedoor.com/forecast/webservice/rest/v1";
 
 	private final Handler handler = new Handler();
+	private CachedImage xmlfile;
 	private Forecast detail;
 	private Request request;
 	private String filename;
@@ -88,8 +87,33 @@ public class ForecastDetail extends Activity {
 				setTextViewById(R.id.temp_min, "--.-℃");
 			}
 
-			ImageView iv = (ImageView) findViewById(R.id.icon);
-			iv.setImageURI(Uri.parse(detail.getIcon().getUrl()));
+			final ImageView iv = (ImageView) findViewById(R.id.icon);
+			final CachedImage icon = new CachedImage(ForecastDetail.this, "icon", detail.getIcon().getUrl(), null);
+			icon.setHandler(handler);
+			icon.setOnImageAvail(new Runnable() {
+				public void run() {
+					Drawable image;
+					try {
+						FileInputStream is = icon.openFileInput();
+						try {
+							image = Drawable.createFromStream(is, detail.getIcon().getTitle());
+							iv.setImageDrawable(image);
+							iv.setMinimumWidth(image.getIntrinsicWidth() * 2);
+							iv.setMinimumHeight(image.getIntrinsicHeight() * 2);
+						} finally {
+							is.close();
+						}
+					} catch (FileNotFoundException e) {
+						// TODO 自動生成された catch ブロック
+						e.printStackTrace();
+					} catch(IOException ioe) {
+						// TODO 自動生成された catch ブロック
+						ioe.printStackTrace();
+					}
+				}
+			});
+
+			icon.start();
 
 			// ListView lv = (ListView)findViewById(R.id.pinpoint_list);
 			// lv.setAdapter(new SimpleAdapter(ForecastDetail.this,
@@ -107,57 +131,21 @@ public class ForecastDetail extends Activity {
 	private final Runnable onParseComplete = new Runnable() {
 		public void run() {
 			try {
-				FileInputStream in = ForecastDetail.this
-				.openFileInput(filename);
+				FileInputStream in = xmlfile.openFileInput();
 				// DBHelper dbHelper = new DBHelper(ForecastDetail.this);
 				// SQLiteDatabase db = dbHelper.getWritableDatabase();
 				ForecastParser parser = new ForecastParser();
 				try {
 					detail = parser.parse(in);
-					final Uri uri = Uri.parse(detail.getIcon().getUrl());
-
-					QuickFileDownloadThread dl = new QuickFileDownloadThread(
-							ForecastDetail.this, uri.toString(), uri
-							.getLastPathSegment());
-					dl.setHandler(handler);
-					dl.setOnComplete(new Runnable() {
-						public void run() {
-							try {
-								FileInputStream is = ForecastDetail.this
-								.openFileInput(uri.getLastPathSegment());
-								try {
-									ImageView iv = (ImageView) findViewById(R.id.icon);
-									Drawable image = Drawable.createFromStream(is, uri
-											.getLastPathSegment());
-									iv.setImageDrawable(image);
-									iv.setMinimumWidth(image.getIntrinsicWidth() * 2);
-									iv.setMinimumHeight(image.getIntrinsicHeight() * 2);
-								} finally {
-									try {
-										is.close();
-									} catch (IOException e) {
-									}
-								}
-							} catch (FileNotFoundException fe) {
-								fe.printStackTrace();
-							}
-						}
-					});
-					dl.start();
-
 					handler.post(setUIContents);
 				} finally {
-					try {
-						in.close();
-					} catch (IOException e) {
-					}
+					in.close();
 				}
 			} catch (XmlPullParserException ioe) {
 				Log.d(TAG, ioe.getMessage());
 				ioe.printStackTrace();
 			} catch (FileNotFoundException e) {
 				// TODO 自動生成された catch ブロック
-				System.err.println(e);
 				e.printStackTrace();
 				Log.d(TAG, "onParseComplete(): failed");
 				setResult(RESULT_CANCELED);
@@ -172,7 +160,6 @@ public class ForecastDetail extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		// setContentView(R.layout.forecast);
 		setContentView(R.layout.wait);
 		setTextViewById(R.id.text_wait, "予報を取得しています...");
 
@@ -180,27 +167,22 @@ public class ForecastDetail extends Activity {
 		int forecastday = Forecast.TOMORROW;
 
 		Intent it = getIntent();
-		Bundle extras = it.getExtras();
 		setTitle(it.getStringExtra("name"));
 		city_id = it.getIntExtra("city_id", -1);
 		forecastday = it.getIntExtra("forecastday", Forecast.TOMORROW);
 
 		request = new Request(city_id, forecastday);
-		filename = String.format("forecast_%03d_%d.xml", city_id, forecastday);
+		filename = String.format("%03d_%d.xml", city_id, forecastday);
 
 		Log.d(TAG, "onCreate()");
 
 		final Runnable updateThread = new Runnable() {
 			public void run() {
-				File f = ForecastDetail.this.getFileStreamPath(filename);
-				if (!f.exists() || true) {
-					QuickFileDownloadThread dl = new QuickFileDownloadThread(
-							ForecastDetail.this, request.toString(), filename);
-					dl.setOnComplete(onParseComplete);
-					dl.start();
-				} else {
-					onParseComplete.run();
-				}
+				xmlfile = new CachedImage(ForecastDetail.this, "forecast", request.toString(), filename);
+				xmlfile.setHandler(null);
+				xmlfile.setCacheLife(60 * 60 * 1000); // an hour
+				xmlfile.setOnImageAvail(onParseComplete);
+				xmlfile.start();
 			}
 		};
 		new Thread(updateThread).start();
@@ -208,8 +190,6 @@ public class ForecastDetail extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// menu.add(Menu.NONE, MID_ADD_CITY, Menu.NONE,
-		// "地点を追加").setIcon(android.R.drawable.ic_menu_add);
 		super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, 1, Menu.NONE, "ピンポイント予報");
 		return true;
@@ -221,8 +201,8 @@ public class ForecastDetail extends Activity {
 		super.onMenuItemSelected(featureId, item);
 
 		if (item.getItemId() == 1) {
-			SimpleAdapter adapter = new SimpleAdapter(this, detail
-					.getPinpointAsMap(), android.R.layout.select_dialog_item,
+			SimpleAdapter adapter = new SimpleAdapter(this, detail.getPinpointAsMap(),
+					android.R.layout.select_dialog_item,
 					new String[] { PinpointLocation.KEY_TITLE },
 					new int[] { android.R.id.text1 });
 

@@ -26,9 +26,13 @@ import android.util.Xml;
  */
 public class ForecastParser {
 	private static final String TAG = "ForecastParser";
+	private static final SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
+
+	public ForecastParser() {
+	}
 
 	public Forecast parse(InputStream in) throws XmlPullParserException, IOException {
-		XmlPullParser parser = Xml.newPullParser(); 
+		XmlPullParser parser = Xml.newPullParser();
 		Forecast forecast = new Forecast();
 
 		parser.setInput(new InputStreamReader(in));
@@ -85,7 +89,6 @@ public class ForecastParser {
 					}
 				}
 				if(tagName.equals("forecastdate")) {
-					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						forecast.setForecastdate(date);
@@ -95,7 +98,6 @@ public class ForecastParser {
 					}
 				}
 				if(tagName.equals("publictime")) {
-					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						forecast.setPublictime(date);
@@ -172,7 +174,6 @@ public class ForecastParser {
 					location.setLink(parser.getText());
 				}
 				if(tagName.equals("publictime")) {
-					SimpleDateFormat df = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.US);
 					try {
 						Date date = df.parse(parser.getText());
 						location.setPublictime(date);
