@@ -5,13 +5,17 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class ForecastList extends ListActivity {
 	private static final String TAG = "ForecastList";
@@ -20,11 +24,16 @@ public class ForecastList extends ListActivity {
 	private Cursor cursor;
 
 	private static final int MID_ADD_CITY = 0x1001;
+	private static final int MID_SHOW_DETAIL = 0x2001;
+	private static final int MID_DELETE_CITY = 0x2002;
+
+	private static final int MID_ABOUT_APP = 0x1010;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.simple_list);
+		setTitle("予報地点一覧");
 
 		TextView tv = (TextView)findViewById(android.R.id.empty);
 		tv.setText("地点が登録されていません。メニューから地点の登録を行ってください。");
@@ -48,13 +57,39 @@ public class ForecastList extends ListActivity {
 		// Bind to our new adapter.
 		setListAdapter(adapter);
 		setProgressBarVisibility(false);
+		registerForContextMenu(getListView());
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		menu.add(Menu.NONE, MID_ADD_CITY, Menu.NONE, "地点を追加").setIcon(android.R.drawable.ic_menu_add);
+		menu.add(Menu.NONE, MID_ABOUT_APP, Menu.NONE, "LWWS について");
 		return true;
+	}
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+
+		AdapterContextMenuInfo mnuInfo = (AdapterContextMenuInfo)menuInfo;
+		Cursor c = (Cursor)getListView().getItemAtPosition(mnuInfo.position);
+		final int city_id = c.getInt(3);
+		final String name = c.getString(4);
+
+		menu.setHeaderTitle(name);
+		menu.add(Menu.NONE, MID_SHOW_DETAIL, Menu.NONE, "詳細を見る").setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			public boolean onMenuItemClick(MenuItem item) {
+				Intent it = new Intent(ForecastList.this, ForecastDetailTabs.class);
+				it.setData(LwwsUri.buildForForecastDetail(city_id));
+				it.putExtra("name", name);
+				it.putExtra("city_id", city_id);
+
+				startActivity(it);
+				return true;
+			}
+		});
+		menu.add(Menu.NONE, MID_DELETE_CITY, Menu.NONE, "削除");
 	}
 
 	@Override
@@ -79,9 +114,10 @@ public class ForecastList extends ListActivity {
 		case MID_ADD_CITY:
 			Intent it = new Intent(ForecastList.this, CityPicker.class);
 			startActivityForResult(it, RequestCodes.PICK_CITY);
+			break;
 		default:
-			return super.onMenuItemSelected(featureId, item);
 		}
+		return super.onMenuItemSelected(featureId, item);
 	}
 
 	@Override

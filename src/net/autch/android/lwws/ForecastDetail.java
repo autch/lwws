@@ -26,13 +26,21 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.AdapterView.OnItemClickListener;
 
 public class ForecastDetail extends Activity {
 	private static final String TAG = "ForecastDetail";
+
+	private static final int MID_PINPOINT = 0x1001;
+	private static final int MID_ABOUT_PROVIDERS = 0x1011;
 
 	private final Handler handler = new Handler();
 	private CachedImage xmlfile;
@@ -51,7 +59,7 @@ public class ForecastDetail extends Activity {
 
 			setContentView(R.layout.forecast);
 
-			switch (detail.getForecastday()) {
+			switch (detail.forecastday) {
 			case Forecast.TODAY:
 				forecastday = "きょう";
 				break;
@@ -65,30 +73,28 @@ public class ForecastDetail extends Activity {
 				forecastday = "";
 			}
 
-			GregorianCalendar cal = new GregorianCalendar(TimeZone.getDefault(), Locale.getDefault());
-			cal.setTime(detail.getForecastdate());
-			setTextViewById(R.id.city_and_day, detail.getCity() + " - "
-					+ forecastday + ": " + cal.get(GregorianCalendar.DAY_OF_MONTH) + "日");
-			setTextViewById(R.id.prefecture, detail.getPref() + " - "
-					+ detail.getArea());
-			setTextViewById(R.id.icon_telop, detail.getIcon().getTitle());
-			if (!Double.isNaN(detail.getTemperature().getMaxC())) {
-				setTextViewById(R.id.temp_max, detail.getTemperature()
-						.getMaxC()
-						+ "℃");
+			GregorianCalendar cal = new GregorianCalendar(
+					TimeZone.getDefault(), Locale.getDefault());
+			cal.setTime(detail.forecastdate);
+			setTextViewById(R.id.city_and_day, detail.city + " - "
+					+ forecastday + ": "
+					+ cal.get(GregorianCalendar.DAY_OF_MONTH) + "日");
+			setTextViewById(R.id.prefecture, detail.pref + " - " + detail.area);
+			setTextViewById(R.id.icon_telop, detail.icon.title);
+			if (!Double.isNaN(detail.temperature.max_c)) {
+				setTextViewById(R.id.temp_max, detail.temperature.max_c + "℃");
 			} else {
 				setTextViewById(R.id.temp_max, "--.-℃");
 			}
-			if (!Double.isNaN(detail.getTemperature().getMinC())) {
-				setTextViewById(R.id.temp_min, detail.getTemperature()
-						.getMinC()
-						+ "℃");
+			if (!Double.isNaN(detail.temperature.min_c)) {
+				setTextViewById(R.id.temp_min, detail.temperature.min_c + "℃");
 			} else {
 				setTextViewById(R.id.temp_min, "--.-℃");
 			}
 
 			final ImageView iv = (ImageView) findViewById(R.id.icon);
-			final CachedImage icon = new CachedImage(ForecastDetail.this, "icon", detail.getIcon().getUrl(), null);
+			final CachedImage icon = new CachedImage(ForecastDetail.this,
+					"icon", detail.icon.url, null);
 			icon.setHandler(handler);
 			icon.setOnImageAvail(new Runnable() {
 				public void run() {
@@ -96,7 +102,8 @@ public class ForecastDetail extends Activity {
 					try {
 						FileInputStream is = icon.openFileInput();
 						try {
-							image = Drawable.createFromStream(is, detail.getIcon().getTitle());
+							image = Drawable.createFromStream(is,
+									detail.icon.title);
 							iv.setImageDrawable(image);
 							iv.setMinimumWidth(image.getIntrinsicWidth() * 2);
 							iv.setMinimumHeight(image.getIntrinsicHeight() * 2);
@@ -106,7 +113,7 @@ public class ForecastDetail extends Activity {
 					} catch (FileNotFoundException e) {
 						// TODO 自動生成された catch ブロック
 						e.printStackTrace();
-					} catch(IOException ioe) {
+					} catch (IOException ioe) {
 						// TODO 自動生成された catch ブロック
 						ioe.printStackTrace();
 					}
@@ -121,7 +128,7 @@ public class ForecastDetail extends Activity {
 			// new String[]{ "title" }, new int[]{ android.R.id.text1 }));
 
 			WebView wv = (WebView) findViewById(R.id.description);
-			wv.loadDataWithBaseURL("about:blank", detail.getDescription(),
+			wv.loadDataWithBaseURL("about:blank", detail.description,
 					"text/html", "utf-8", "about:blank");
 
 			Log.d(TAG, "onParseComplete(): success");
@@ -178,7 +185,8 @@ public class ForecastDetail extends Activity {
 
 		final Runnable updateThread = new Runnable() {
 			public void run() {
-				xmlfile = new CachedImage(ForecastDetail.this, "forecast", request.toString(), filename);
+				xmlfile = new CachedImage(ForecastDetail.this, "forecast",
+						request.toString(), filename);
 				xmlfile.setHandler(null);
 				xmlfile.setCacheLife(60 * 60 * 1000); // an hour
 				xmlfile.setOnImageAvail(onParseComplete);
@@ -191,36 +199,75 @@ public class ForecastDetail extends Activity {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-		menu.add(Menu.NONE, 1, Menu.NONE, "ピンポイント予報");
+		menu.add(Menu.NONE, MID_PINPOINT, Menu.NONE, "ピンポイント予報");
+		menu.add(Menu.NONE, MID_ABOUT_PROVIDERS, Menu.NONE, "情報提供者について");
 		return true;
 	}
 
 	@Override
 	public boolean onMenuItemSelected(int featureId, MenuItem item) {
-		// TODO 自動生成されたメソッド・スタブ
-		super.onMenuItemSelected(featureId, item);
+		AlertDialog.Builder builder;
 
-		if (item.getItemId() == 1) {
-			SimpleAdapter adapter = new SimpleAdapter(this, detail.getPinpointAsMap(),
-					android.R.layout.select_dialog_item,
+		switch (item.getItemId()) {
+		case MID_PINPOINT:
+			SimpleAdapter adapter = new SimpleAdapter(this, detail
+					.getPinpointAsMap(), android.R.layout.select_dialog_item,
 					new String[] { PinpointLocation.KEY_TITLE },
 					new int[] { android.R.id.text1 });
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder = new AlertDialog.Builder(this);
 			builder.setTitle("ピンポイント予報を見る");
 			builder.setCancelable(true);
 
 			builder.setSingleChoiceItems(adapter, -1, new OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-					PinpointLocation location = detail.getPinpoint().get(which);
-					Intent it = new Intent("android.intent.action.VIEW",
-							Uri.parse(location.getLink()));
+					PinpointLocation location = detail.pinpoint.get(which);
+					Intent it = new Intent("android.intent.action.VIEW", Uri
+							.parse(location.link));
 					startActivity(it);
 				}
 			});
 			builder.create();
 			builder.show();
+			break;
+		case MID_ABOUT_PROVIDERS:
+			Uri uri = Uri.parse(detail.copyright.banner.url);
+
+			final CachedImage icon = new CachedImage(this, "copyright", uri.toString(), uri.getLastPathSegment());
+			icon.setHandler(handler);
+			icon.setOnImageAvail(new Runnable() {
+				public void run() {
+					AlertDialog.Builder builder = new AlertDialog.Builder(ForecastDetail.this);
+
+					builder.setTitle(detail.copyright.banner.title);
+					builder.setIcon(Drawable.createFromPath(icon.getFile().toString()));
+					builder.setMessage(detail.copyright.title);
+
+					final SimpleAdapter adapter = new SimpleAdapter(ForecastDetail.this, detail.copyright.getProvidersAsMap(),
+							android.R.layout.simple_list_item_1, new String[] { "name" }, new int[] { android.R.id.text1 });
+
+					LinearLayout ll = new LinearLayout(ForecastDetail.this);
+					ll.setOrientation(LinearLayout.VERTICAL);
+					ListView lv = new ListView(ForecastDetail.this);
+					lv.setAdapter(adapter);
+					lv.setOnItemClickListener(new OnItemClickListener() {
+						public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+							Intent it = new Intent("android.intent.action.VIEW", Uri
+									.parse(detail.copyright.providers.get(position).link));
+							startActivity(it);
+						}
+					});
+					ll.addView(lv);
+
+					builder.setView(ll);
+
+					builder.create();
+					builder.show();
+				}
+			});
+			icon.start();
+			break;
 		}
-		return true;
+		return super.onMenuItemSelected(featureId, item);
 	}
 }

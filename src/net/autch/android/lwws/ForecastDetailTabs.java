@@ -18,6 +18,8 @@ public class ForecastDetailTabs extends TabActivity {
 		name = caller.getStringExtra("name");
 		city_id = caller.getIntExtra("city_id", -1);
 
+		setTitle(name + "の天気");
+
 		TabHost tabHost = getTabHost();
 		TabSpec tab;
 		Intent it, it_tmpl;

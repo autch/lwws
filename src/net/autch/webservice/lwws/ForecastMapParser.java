@@ -15,8 +15,8 @@ import android.util.Xml;
 /**
  * Livedoor Weather Web Service で使う、地点番号の一覧を解析して SQLite データベースへ保存する。  
  * 
- * TODO: 用が済んだらさっさと return する
- * FIXME: XML が壊れてたら？
+ * @todo 用が済んだらさっさと return する
+ * @fixme XML が壊れてたら？
  */
 public class ForecastMapParser {
 	private int area_id, pref_id;

@@ -52,70 +52,70 @@ public class ForecastParser {
 			case XmlPullParser.START_TAG:
 				tagName = parser.getName();
 				if(tagName.equals("location")) {
-					forecast.setArea(parser.getAttributeValue(null, "area"));
-					forecast.setPref(parser.getAttributeValue(null, "pref"));
-					forecast.setCity(parser.getAttributeValue(null, "city"));
+					forecast.area = parser.getAttributeValue(null, "area");
+					forecast.pref = parser.getAttributeValue(null, "pref");
+					forecast.city = parser.getAttributeValue(null, "city");
 				}
 				if(tagName.equals("pinpoint")){
 					forecast = parsePinpoint(parser, forecast);
 				}
 				if(tagName.equals("image")) {
-					parseImage(parser, forecast.getIcon());
+					parseImage(parser, forecast.icon);
 				}
 				if(tagName.equals("temperature")) {
-					parseTemperature(parser, forecast.getTemperature());
+					parseTemperature(parser, forecast.temperature);
 				}
 				if(tagName.equals("copyright")) {
-					parseCopyright(parser, forecast.getCopyright());
+					parseCopyright(parser, forecast.copyright);
 				}
 				break;
 			case XmlPullParser.TEXT:
 				if(tagName.equals("author")) {
-					forecast.setAuthor(parser.getText());
+					forecast.author = parser.getText();
 				}
 				if(tagName.equals("title")) {
-					forecast.setTitle(parser.getText());
+					forecast.title = parser.getText();
 				}
 				if(tagName.equals("forecastday")) {
 					String day = parser.getText();
 					if(day.equals("today")) {
-						forecast.setForecastday(Forecast.TODAY);
+						forecast.forecastday = Forecast.TODAY;
 					}
 					if(day.equals("tomorrow")) {
-						forecast.setForecastday(Forecast.TOMORROW);
+						forecast.forecastday = Forecast.TOMORROW;
 					}
 					if(day.equals("dayaftertomorrow")) {
-						forecast.setForecastday(Forecast.DAY_AFTER_TOMORROW);
+						forecast.forecastday = Forecast.DAY_AFTER_TOMORROW;
 					}
 				}
 				if(tagName.equals("forecastdate")) {
 					try {
 						Date date = df.parse(parser.getText());
-						forecast.setForecastdate(date);
+						forecast.forecastdate = date;
 					} catch (ParseException e) {
 						e.printStackTrace();
-						forecast.setForecastdate(null);
+						forecast.forecastdate = null;
 					}
 				}
 				if(tagName.equals("publictime")) {
 					try {
 						Date date = df.parse(parser.getText());
-						forecast.setPublictime(date);
+						forecast.publictime = date;
 					} catch (ParseException e) {
-						forecast.setPublictime(null);
+						forecast.publictime = null;
 					}
 				}
 				if(tagName.equals("day")) {
-					forecast.setDay(parser.getText());
+					forecast.day = parser.getText();
 				}
 				if(tagName.equals("link")) {
-					forecast.setLink(parser.getText());
+					forecast.link = parser.getText();
 				}
 				if(tagName.equals("telop")) {
-					forecast.setTelop(parser.getText());
+					forecast.telop = parser.getText();
 				}
 				if(tagName.equals("description")) {
-					forecast.setDescription(parser.getText());
+					forecast.description = parser.getText();
 				}
 				break;
 			case XmlPullParser.END_TAG:
@@ -140,7 +140,7 @@ public class ForecastParser {
 				if(tagName.equals("location")) {
 					PinpointLocation location = forecast.new PinpointLocation();
 					if(parsePinpointLocation(parser, location))
-						forecast.addPinpoint(location);
+						forecast.pinpoint.add(location);
 				}
 				break;
 			case XmlPullParser.END_TAG:
@@ -168,17 +168,17 @@ public class ForecastParser {
 				break;
 			case XmlPullParser.TEXT:
 				if(tagName.equals("title")) {
-					location.setTitle(parser.getText());
+					location.title = parser.getText();
 				}
 				if(tagName.equals("link")) {
-					location.setLink(parser.getText());
+					location.link = parser.getText();
 				}
 				if(tagName.equals("publictime")) {
 					try {
 						Date date = df.parse(parser.getText());
-						location.setPublictime(date);
+						location.publictime = date;
 					} catch (ParseException e) {
-						location.setPublictime(null);
+						location.publictime = null;
 					}
 				}
 				break;
@@ -207,19 +207,19 @@ public class ForecastParser {
 				break;
 			case XmlPullParser.TEXT:
 				if(tagName.equals("title")) {
-					image.setTitle(parser.getText());
+					image.title = parser.getText();
 				}
 				if(tagName.equals("link")) {
-					image.setLink(parser.getText());
+					image.link = parser.getText();
 				}
 				if(tagName.equals("url")) {
-					image.setUrl(parser.getText());
+					image.url = parser.getText();
 				}
 				if(tagName.equals("width")) {
-					image.setWidth(parseIntSafely(parser.getText()));
+					image.width = parseIntSafely(parser.getText());
 				}
 				if(tagName.equals("height")) {
-					image.setHeight(parseIntSafely(parser.getText()));
+					image.height = parseIntSafely(parser.getText());
 				}
 				break;
 			case XmlPullParser.END_TAG:
@@ -258,15 +258,15 @@ public class ForecastParser {
 			case XmlPullParser.TEXT:
 				if(tagName.equals("celsius")) {
 					if(which == MAX)
-						temp.setMaxC(parseDoubleSafely(parser.getText()));
+						temp.max_c = parseDoubleSafely(parser.getText());
 					if(which == MIN)
-						temp.setMinC(parseDoubleSafely(parser.getText()));
+						temp.min_c = parseDoubleSafely(parser.getText());
 				}
 				if(tagName.equals("fahrenheit")) {
 					if(which == MAX)
-						temp.setMaxF(parseDoubleSafely(parser.getText()));
+						temp.max_f = parseDoubleSafely(parser.getText());
 					if(which == MIN)
-						temp.setMinF(parseDoubleSafely(parser.getText()));
+						temp.min_f = parseDoubleSafely(parser.getText());
 				}
 				break;
 			case XmlPullParser.END_TAG:
@@ -311,20 +311,20 @@ public class ForecastParser {
 				tagName = parser.getName();
 				if(tagName.equals("provider")) {
 					Provider provider = copyright.new Provider();
-					provider.setName(parser.getAttributeValue(null, "name"));
-					provider.setLink(parser.getAttributeValue(null, "link"));
-					copyright.addProvider(provider);
+					provider.name = parser.getAttributeValue(null, "name");
+					provider.link = parser.getAttributeValue(null, "link");
+					copyright.providers.add(provider);
 				}
 				if(tagName.equals("image")) {
-					parseImage(parser, copyright.getBanner());
+					parseImage(parser, copyright.banner);
 				}
 				break;
 			case XmlPullParser.TEXT:
 				if(tagName.equals("title")) {
-					copyright.setTitle(parser.getText());
+					copyright.title = parser.getText();
 				}
 				if(tagName.equals("link")) {
-					copyright.setLink(parser.getText());
+					copyright.link = parser.getText();
 				}
 				break;
 			case XmlPullParser.END_TAG:
