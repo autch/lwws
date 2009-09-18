@@ -76,9 +76,7 @@ public class ForecastDetail extends Activity {
 			GregorianCalendar cal = new GregorianCalendar(
 					TimeZone.getDefault(), Locale.getDefault());
 			cal.setTime(detail.forecastdate);
-			setTextViewById(R.id.city_and_day, detail.city + " - "
-					+ forecastday + ": "
-					+ cal.get(GregorianCalendar.DAY_OF_MONTH) + "日");
+			setTextViewById(R.id.city_and_day, detail.title);
 			setTextViewById(R.id.prefecture, detail.pref + " - " + detail.area);
 			setTextViewById(R.id.icon_telop, detail.icon.title);
 			if (!Double.isNaN(detail.temperature.max_c)) {
